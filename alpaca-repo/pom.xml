@@ -13,6 +13,9 @@
         <groupId>org.alfresco.maven</groupId>
         <artifactId>alfresco-sdk-parent</artifactId>
         <version>2.2.0</version>
+        <!-- Empty relativePath forces Maven to resolve the parent from the repository
+             instead of walking up to the aggregator pom.xml one level above. -->
+        <relativePath/>
     </parent>
 
     <!--
@@ -23,7 +26,11 @@
     <properties>
         <!-- The following are default values for data location and Alfresco Community version.
              Uncomment if you need to change (Note. current default version for Enterprise edition is 5.1) -->
-          <alfresco.version>5.1.f</alfresco.version>
+          <alfresco.version>5.1.g</alfresco.version>
+          <!-- The alfresco-platform-distribution BOM references this property but no
+               POM in its inheritance chain defines it, so we have to set it here.
+               For Alfresco 5.1.x the matching Spring Surf line is 6.11. -->
+          <dependency.surf.version>6.11</dependency.surf.version>
           <!-- <alfresco.data.location>/absolute/path/to/alf_data_dev</alfresco.data.location> -->
 
         <!-- This control the root logging level for all apps uncomment and change, defaults to WARN

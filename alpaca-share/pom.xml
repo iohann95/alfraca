@@ -13,6 +13,9 @@
         <groupId>org.alfresco.maven</groupId>
         <artifactId>alfresco-sdk-parent</artifactId>
         <version>2.2.0</version>
+        <!-- Empty relativePath forces Maven to resolve the parent from the repository
+             instead of walking up to the aggregator pom.xml one level above. -->
+        <relativePath/>
     </parent>
 
     <!--
@@ -23,7 +26,11 @@
     <properties>
         <!-- The following are default values for data location and Alfresco version.
              Uncomment if you need to change -->
-        <alfresco.version>5.1.f</alfresco.version>
+        <alfresco.version>5.1.g</alfresco.version>
+        <!-- The alfresco-platform-distribution BOM references this property but no
+             POM in its inheritance chain defines it, so we have to set it here.
+             For Alfresco 5.1.x the matching Spring Surf line is 6.11. -->
+        <dependency.surf.version>6.11</dependency.surf.version>
 
         <!-- This control the root logging level for all apps uncomment and change, defaults to WARN
             <app.log.root.level>WARN</app.log.root.level>
@@ -50,6 +57,35 @@
         (e.g.version and edition) -->
     <dependencyManagement>
         <dependencies>
+            <!-- The alfresco-platform-distribution BOM (transitively) declares several
+                 org.alfresco.surf:* artifacts with version="${dependency.surf.version}",
+                 but no POM in its inheritance chain actually defines that property, so
+                 Maven leaves the literal placeholder in the resolved version string and
+                 dependency resolution fails for any transitively pulled surf artifact
+                 (e.g. spring-surf, brought in by alfresco "share").
+                 We pin them here BEFORE importing the BOM so our explicit versions win
+                 over the broken managed entries. -->
+            <dependency>
+                <groupId>org.alfresco.surf</groupId>
+                <artifactId>spring-surf</artifactId>
+                <version>${dependency.surf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.alfresco.surf</groupId>
+                <artifactId>spring-surf-api</artifactId>
+                <version>${dependency.surf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.alfresco.surf</groupId>
+                <artifactId>spring-surf-cmis</artifactId>
+                <version>${dependency.surf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.alfresco.surf</groupId>
+                <artifactId>spring-cmis-framework</artifactId>
+                <version>${dependency.surf.version}</version>
+            </dependency>
+
             <!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition
                 (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies)
                 NOTE: You still need to define dependencies in your POM, but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults
